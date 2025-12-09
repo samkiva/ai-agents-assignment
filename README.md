@@ -8,7 +8,9 @@ Course: AI Agents & Applications
 
 🔗 Interactive Simulation
 
-Live Demo: [Click here to view the AutoParts Inc. AI Agent System Simulation]([https://claude.ai/public/artifacts/8ee97083-ca59-4634-afea-4ef2f3d05746])
+Live Demo: [Click here to view the AutoParts Inc. AI Agent System Simulation]
+
+([https://claude.ai/public/artifacts/8ee97083-ca59-4634-afea-4ef2f3d05746])
 
 The simulation demonstrates three coordinated AI agents:
 
