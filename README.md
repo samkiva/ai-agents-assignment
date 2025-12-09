@@ -1,6 +1,6 @@
-AI Agents Assignment
+**AI Agents Assignment**
 
-Student Name: Kivairu Samuel
+**Student Name: Kivairu Samuel**
     
 Date: December 2025
 
@@ -13,6 +13,14 @@ Live Demo: [Click here to view the AutoParts Inc. AI Agent System Simulation]
 ([https://claude.ai/public/artifacts/8ee97083-ca59-4634-afea-4ef2f3d05746])
 
 **Note**: The simulation uses Tailwind CDN for simplicity in this educational demo.
+
+## Technical Notes
+
+**Simulation Implementation**: This is an educational demonstration using React 
+for interactivity. The Tailwind CDN (or custom CSS) is used for styling in 
+this prototype environment.
+
+**Browser Compatibility**: Works in all modern browsers (Chrome, Firefox, Safari, Edge)
 
 The simulation demonstrates three coordinated AI agents:
 
