@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts Inc. AI Agent System Simulation</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #cbd5e1;
+        }
+
+        .controls {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .runtime {
+            font-size: 1.25rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--color-from), var(--color-to));
+        }
+
+        .metric-card.defect { --color-from: #dc2626; --color-to: #b91c1c; }
+        .metric-card.quality { --color-from: #16a34a; --color-to: #15803d; }
+        .metric-card.throughput { --color-from: #2563eb; --color-to: #1d4ed8; }
+        .metric-card.uptime { --color-from: #9333ea; --color-to: #7e22ce; }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-target {
+            font-size: 0.75rem;
+            opacity: 0.75;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-panel {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .agent-header {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .agent-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .agent-indicator.qa { background: #22c55e; }
+        .agent-indicator.pm { background: #3b82f6; }
+        .agent-indicator.po { background: #a855f7; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .activity-item {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .activity-item.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .activity-item.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .activity-item.alert {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .activity-message {
+            font-weight: 500;
+        }
+
+        .activity-time {
+            font-size: 0.7rem;
+            opacity: 0.75;
+            margin-top: 0.25rem;
+        }
+
+        .activity-placeholder {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .alerts-panel {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .alerts-panel h3 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            font-size: 0.875rem;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-item.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-message {
+            font-weight: 500;
+        }
+
+        .alert-time {
+            font-size: 0.75rem;
+            opacity: 0.75;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .footer p {
+            margin-top: 0.25rem;
+        }
+
+        /* Scrollbar styling */
+        .alerts-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .alerts-list::-webkit-scrollbar-track {
+            background: #334155;
+            border-radius: 3px;
+        }
+
+        .alerts-list::-webkit-scrollbar-thumb {
+            background: #64748b;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const AutoPartsAISimulation = () => {
+          const [isRunning, setIsRunning] = useState(false);
+          const [time, setTime] = useState(0);
+          const [metrics, setMetrics] = useState({
+            defectRate: 15,
+            downtimeHours: 0,
+            throughput: 100,
+            qualityScore: 70
+          });
+          
+          const [alerts, setAlerts] = useState([]);
+          const [agentActivities, setAgentActivities] = useState({
+            qa: [],
+            pm: [],
+            po: []
+          });
+
+          useEffect(() => {
+            let interval;
+            if (isRunning) {
+              interval = setInterval(() => {
+                setTime(t => t + 1);
+                simulateAgentBehavior();
+              }, 2000);
+            }
+            return () => clearInterval(interval);
+          }, [isRunning, time]);
+
+          const simulateAgentBehavior = () => {
+            if (time > 5 && metrics.defectRate > 3) {
+              setMetrics(prev => ({
+                ...prev,
+                defectRate: Math.max(3, prev.defectRate - 0.5),
+                qualityScore: Math.min(98, prev.qualityScore + 1)
+              }));
+              
+              if (time % 3 === 0) {
+                addAgentActivity('qa', 'Detected precision defect in Component #' + Math.floor(Math.random() * 1000), 'warning');
+              }
+            }
+
+            if (time > 10 && time % 8 === 0) {
+              addAgentActivity('pm', 'Predicted bearing failure in Machine #' + (Math.floor(Math.random() * 5) + 1) + ' in 48 hours', 'alert');
+              addAlert('Preventive maintenance scheduled - avoiding 4hr downtime', 'success');
+            }
+
+            if (time > 7 && time % 5 === 0) {
+              setMetrics(prev => ({
+                ...prev,
+                throughput: Math.min(145, prev.throughput + 2)
+              }));
+              addAgentActivity('po', 'Optimized schedule: +3% throughput gain', 'success');
+            }
+
+            if (time % 4 === 0) {
+              const passRate = Math.random() > (metrics.defectRate / 100);
+              if (passRate) {
+                addAgentActivity('qa', 'Batch quality check: PASSED', 'success');
+              } else {
+                addAgentActivity('qa', 'Defect found - redirecting to rework station', 'warning');
+              }
+            }
+          };
+
+          const addAgentActivity = (agent, message, type) => {
+            setAgentActivities(prev => ({
+              ...prev,
+              [agent]: [{
+                id: Date.now(),
+                message,
+                type,
+                timestamp: new Date().toLocaleTimeString()
+              }, ...prev[agent]].slice(0, 5)
+            }));
+          };
+
+          const addAlert = (message, type) => {
+            setAlerts(prev => [{
+              id: Date.now(),
+              message,
+              type,
+              timestamp: new Date().toLocaleTimeString()
+            }, ...prev].slice(0, 8));
+          };
+
+          const reset = () => {
+            setIsRunning(false);
+            setTime(0);
+            setMetrics({
+              defectRate: 15,
+              downtimeHours: 0,
+              throughput: 100,
+              qualityScore: 70
+            });
+            setAlerts([]);
+            setAgentActivities({ qa: [], pm: [], po: [] });
+          };
+
+          return (
+            <div className="container">
+              <div className="header">
+                <h1>AutoParts Inc. AI Agent System</h1>
+                <p>Real-time Multi-Agent Manufacturing Simulation</p>
+              </div>
+
+              <div className="controls">
+                <div className="controls-buttons">
+                  <button onClick={() => setIsRunning(!isRunning)} className="btn btn-primary">
+                    {isRunning ? '⏸ Pause' : '▶ Start'} Simulation
+                  </button>
+                  <button onClick={reset} className="btn btn-secondary">
+                    ↻ Reset
+                  </button>
+                </div>
+                <div className="runtime">
+                  Runtime: {Math.floor(time / 30)}m {(time % 30) * 2}s
+                </div>
+              </div>
+
+              <div className="metrics-grid">
+                <div className="metric-card defect">
+                  <div className="metric-header">
+                    <span>Defect Rate</span>
+                    <span>⚠️</span>
+                  </div>
+                  <div className="metric-value">{metrics.defectRate.toFixed(1)}%</div>
+                  <div className="metric-target">Target: &lt;4%</div>
+                </div>
+
+                <div className="metric-card quality">
+                  <div className="metric-header">
+                    <span>Quality Score</span>
+                    <span>✓</span>
+                  </div>
+                  <div className="metric-value">{metrics.qualityScore}%</div>
+                  <div className="metric-target">Target: &gt;95%</div>
+                </div>
+
+                <div className="metric-card throughput">
+                  <div className="metric-header">
+                    <span>Throughput</span>
+                    <span>📈</span>
+                  </div>
+                  <div className="metric-value">{metrics.throughput}%</div>
+                  <div className="metric-target">Baseline: 100%</div>
+                </div>
+
+                <div className="metric-card uptime">
+                  <div className="metric-header">
+                    <span>Uptime</span>
+                    <span>⚡</span>
+                  </div>
+                  <div className="metric-value">{(100 - metrics.downtimeHours).toFixed(0)}%</div>
+                  <div className="metric-target">Target: &gt;95%</div>
+                </div>
+              </div>
+
+              <div className="agents-grid">
+                <div className="agent-panel">
+                  <h3 className="agent-header">
+                    <div className="agent-indicator qa"></div>
+                    QA Agent
+                  </h3>
+                  <div className="activity-list">
+                    {agentActivities.qa.length === 0 ? (
+                      <p className="activity-placeholder">Waiting for activity...</p>
+                    ) : (
+                      agentActivities.qa.map(activity => (
+                        <div key={activity.id} className={`activity-item ${activity.type}`}>
+                          <div className="activity-message">{activity.message}</div>
+                          <div className="activity-time">{activity.timestamp}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="agent-panel">
+                  <h3 className="agent-header">
+                    <div className="agent-indicator pm"></div>
+                    PM Agent
+                  </h3>
+                  <div className="activity-list">
+                    {agentActivities.pm.length === 0 ? (
+                      <p className="activity-placeholder">Monitoring equipment...</p>
+                    ) : (
+                      agentActivities.pm.map(activity => (
+                        <div key={activity.id} className={`activity-item ${activity.type}`}>
+                          <div className="activity-message">{activity.message}</div>
+                          <div className="activity-time">{activity.timestamp}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="agent-panel">
+                  <h3 className="agent-header">
+                    <div className="agent-indicator po"></div>
+                    PO Agent
+                  </h3>
+                  <div className="activity-list">
+                    {agentActivities.po.length === 0 ? (
+                      <p className="activity-placeholder">Analyzing schedules...</p>
+                    ) : (
+                      agentActivities.po.map(activity => (
+                        <div key={activity.id} className={`activity-item ${activity.type}`}>
+                          <div className="activity-message">{activity.message}</div>
+                          <div className="activity-time">{activity.timestamp}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="alerts-panel">
+                <h3>System Alerts & Notifications</h3>
+                <div className="alerts-list">
+                  {alerts.length === 0 ? (
+                    <p className="activity-placeholder">No alerts yet. Start the simulation to see agent activities.</p>
+                  ) : (
+                    alerts.map(alert => (
+                      <div key={alert.id} className={`alert-item ${alert.type}`}>
+                        <span className="alert-message">{alert.message}</span>
+                        <span className="alert-time">{alert.timestamp}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="footer">
+                <p>This simulation demonstrates three AI agents working collaboratively to improve manufacturing operations.</p>
+                <p>QA Agent: Quality inspection | PM Agent: Predictive maintenance | PO Agent: Production optimization</p>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<AutoPartsAISimulation />, document.getElementById('root'));
+    </script>
+</body>
+</html>
