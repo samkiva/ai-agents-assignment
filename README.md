@@ -1,8 +1,13 @@
 AI Agents Assignment
+
 Student Name: Kivairu Samuel
+    
 Date: December 2025
+
 Course: AI Agents & Applications
+
 🔗 Interactive Simulation
+
 Live Demo: [Click here to view the AutoParts Inc. AI Agent System Simulation]([YOUR SIMULATION LINK])
 The simulation demonstrates three coordinated AI agents:
 
